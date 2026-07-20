@@ -15,14 +15,14 @@
 
     body {
       margin: 0;
-      padding: 40px 20px;
-      background: #f3f5f7;
+      padding: 36px 20px;
+      background: #f4f6f8;
       color: #182c4c;
       font-family: Arial, Helvetica, sans-serif;
     }
 
     .page {
-      max-width: 1120px;
+      max-width: 1080px;
       margin: 0 auto;
     }
 
@@ -33,38 +33,39 @@
     .header h1 {
       margin: 0 0 8px;
       font-size: 28px;
-      color: #182c4c;
+      line-height: 34px;
     }
 
     .header p {
       margin: 0;
       color: #58718a;
       font-size: 15px;
+      line-height: 22px;
     }
 
     .workspace {
       display: grid;
-      grid-template-columns: 340px 1fr;
+      grid-template-columns: 320px 1fr;
       gap: 24px;
       align-items: start;
     }
 
     .panel {
       background: #ffffff;
-      border: 1px solid #d9e0e6;
+      border: 1px solid #d7dfe6;
       border-radius: 12px;
-      padding: 24px;
+      padding: 22px;
       box-shadow: 0 6px 18px rgba(24, 44, 76, 0.08);
     }
 
     .panel h2 {
-      margin: 0 0 20px;
+      margin: 0 0 18px;
       font-size: 18px;
-      color: #182c4c;
+      line-height: 24px;
     }
 
     .field {
-      margin-bottom: 16px;
+      margin-bottom: 15px;
     }
 
     .field label {
@@ -72,29 +73,28 @@
       margin-bottom: 6px;
       font-size: 13px;
       font-weight: 700;
-      color: #182c4c;
     }
 
     .field input {
       width: 100%;
       height: 42px;
       padding: 0 12px;
-      border: 1px solid #bcc8d2;
+      border: 1px solid #b9c5cf;
       border-radius: 6px;
-      font-size: 14px;
-      color: #182c4c;
       background: #ffffff;
+      color: #182c4c;
+      font-size: 14px;
     }
 
     .field input:focus {
-      outline: 2px solid rgba(251, 60, 6, 0.2);
+      outline: 2px solid rgba(251, 60, 6, 0.18);
       border-color: #fb3c06;
     }
 
     .copy-button {
       width: 100%;
       height: 44px;
-      margin-top: 8px;
+      margin-top: 6px;
       border: 0;
       border-radius: 6px;
       background: #fb3c06;
@@ -111,31 +111,35 @@
     .status {
       min-height: 20px;
       margin-top: 12px;
+      color: #58718a;
       text-align: center;
       font-size: 13px;
-      color: #58718a;
     }
 
-    .preview-area {
-      min-height: 340px;
+    .preview-box {
+      min-height: 320px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow-x: auto;
-      background:
-        linear-gradient(#ffffff, #ffffff) padding-box,
-        repeating-linear-gradient(
-          45deg,
-          #f4f6f8,
-          #f4f6f8 10px,
-          #eef1f4 10px,
-          #eef1f4 20px
-        ) border-box;
+      padding: 28px;
+      background: #f8fafb;
+      border: 1px dashed #c8d1d9;
+      border-radius: 8px;
     }
 
-    .signature-wrapper {
-      padding: 30px;
+    .signature-stage {
+      padding: 20px;
       background: #ffffff;
+    }
+
+    .instructions {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #e1e6ea;
+      color: #58718a;
+      font-size: 13px;
+      line-height: 19px;
     }
 
     @media (max-width: 820px) {
@@ -151,8 +155,8 @@
     <header class="header">
       <h1>Shifters AI Email Signature Generator</h1>
       <p>
-        Enter your details, review the preview, and copy the
-        completed signature into Gmail.
+        Enter your details, review the signature, and copy it
+        directly into Gmail.
       </p>
     </header>
 
@@ -201,7 +205,7 @@
           type="button"
           onclick="copySignature()"
         >
-          Copy signature
+          Copy signature for Gmail
         </button>
 
         <div class="status" id="status"></div>
@@ -210,10 +214,15 @@
       <div class="panel">
         <h2>Signature preview</h2>
 
-        <div class="preview-area">
-          <div class="signature-wrapper">
+        <div class="preview-box">
+          <div class="signature-stage">
             <div id="signaturePreview"></div>
           </div>
+        </div>
+
+        <div class="instructions">
+          The preview updates automatically. The final signature
+          uses Gmail-safe table formatting and standard email fonts.
         </div>
       </div>
     </section>
@@ -228,7 +237,7 @@
     };
 
     const preview = document.getElementById("signaturePreview");
-    const statusMessage = document.getElementById("status");
+    const status = document.getElementById("status");
 
     function escapeHtml(value) {
       return value
@@ -238,28 +247,25 @@
         .replaceAll('"', "&quot;");
     }
 
-    function getAssetUrl(filename) {
+    function assetUrl(filename) {
       return new URL(filename, window.location.href).href;
     }
 
-    function getSignatureHtml() {
+    function signatureHtml() {
       const name = escapeHtml(fields.name.value.trim());
       const title = escapeHtml(fields.title.value.trim());
       const phone = escapeHtml(fields.phone.value.trim());
       const email = escapeHtml(fields.email.value.trim());
 
-      const phoneLink = fields.phone.value.replace(
+      const telephoneHref = fields.phone.value.replace(
         /[^+\d]/g,
         ""
       );
 
-      const logoUrl = getAssetUrl(
-        "Shifters%20logo%20silver.png"
-      );
-
-      const phoneIcon = getAssetUrl("icon-phone.png");
-      const emailIcon = getAssetUrl("icon-email.png");
-      const webIcon = getAssetUrl("icon-web.png");
+      const logo = assetUrl("Shifters%20logo%20silver.png");
+      const phoneIcon = assetUrl("icon-phone.png");
+      const emailIcon = assetUrl("icon-email.png");
+      const webIcon = assetUrl("icon-web.png");
 
       return `
 <table
@@ -270,6 +276,7 @@
   style="
     width:520px;
     border-collapse:collapse;
+    table-layout:fixed;
     font-family:Arial,Helvetica,sans-serif;
     color:#182c4c;
   "
@@ -277,24 +284,25 @@
   <tr>
     <td
       rowspan="5"
+      width="120"
       valign="middle"
       style="
-        width:130px;
-        padding:0 18px 0 0;
+        width:120px;
+        padding:0 16px 0 0;
         border-right:2px solid #fb3c06;
         text-align:center;
       "
     >
       <img
-        src="${logoUrl}"
-        width="112"
+        src="${logo}"
+        width="104"
         alt="Shifters AI"
         style="
           display:block;
-          width:112px;
+          width:104px;
           height:auto;
-          border:0;
           margin:0 auto;
+          border:0;
         "
       >
     </td>
@@ -315,9 +323,9 @@
   <tr>
     <td
       style="
-        padding:0 0 10px 14px;
-        font-size:12px;
-        line-height:15px;
+        padding:0 0 9px 14px;
+        font-size:11px;
+        line-height:14px;
         color:#58718a;
       "
     >
@@ -328,11 +336,11 @@
   <tr>
     <td
       style="
-        padding:0 0 10px 14px;
-        font-size:16px;
-        line-height:19px;
+        padding:0 0 9px 14px;
+        font-size:15px;
+        line-height:18px;
         font-weight:700;
-        letter-spacing:5px;
+        letter-spacing:4px;
         color:#fb3c06;
       "
     >
@@ -345,47 +353,49 @@
       style="
         padding:0 0 8px 14px;
         white-space:nowrap;
-        font-size:11px;
-        line-height:15px;
+        font-size:10px;
+        line-height:14px;
         color:#182c4c;
       "
     >
       <img
         src="${phoneIcon}"
-        width="12"
-        height="12"
+        width="11"
+        height="11"
         alt=""
         style="
           display:inline-block;
-          vertical-align:-2px;
-          width:12px;
-          height:12px;
+          width:11px;
+          height:11px;
+          margin:0 3px 0 0;
           border:0;
-          margin-right:4px;
+          vertical-align:-2px;
         "
       >
       <a
-        href="tel:${phoneLink}"
+        href="tel:${telephoneHref}"
         style="
           color:#182c4c;
           text-decoration:none;
         "
       >${phone}</a>
 
-      <span style="display:inline-block;width:12px;"></span>
+      <span
+        style="display:inline-block;width:8px;"
+      ></span>
 
       <img
         src="${emailIcon}"
-        width="12"
-        height="12"
+        width="11"
+        height="11"
         alt=""
         style="
           display:inline-block;
-          vertical-align:-2px;
-          width:12px;
-          height:12px;
+          width:11px;
+          height:11px;
+          margin:0 3px 0 0;
           border:0;
-          margin-right:4px;
+          vertical-align:-2px;
         "
       >
       <a
@@ -396,20 +406,22 @@
         "
       >${email}</a>
 
-      <span style="display:inline-block;width:12px;"></span>
+      <span
+        style="display:inline-block;width:8px;"
+      ></span>
 
       <img
         src="${webIcon}"
-        width="12"
-        height="12"
+        width="11"
+        height="11"
         alt=""
         style="
           display:inline-block;
-          vertical-align:-2px;
-          width:12px;
-          height:12px;
+          width:11px;
+          height:11px;
+          margin:0 3px 0 0;
           border:0;
-          margin-right:4px;
+          vertical-align:-2px;
         "
       >
       <a
@@ -427,9 +439,9 @@
       style="
         padding:7px 0 0 14px;
         border-top:1px solid #9ba9b5;
-        font-size:11px;
-        line-height:14px;
-        letter-spacing:5px;
+        font-size:10px;
+        line-height:13px;
+        letter-spacing:4px;
         color:#fb3c06;
       "
     >
@@ -441,8 +453,8 @@
     }
 
     function updatePreview() {
-      preview.innerHTML = getSignatureHtml();
-      statusMessage.textContent = "";
+      preview.innerHTML = signatureHtml();
+      status.textContent = "";
     }
 
     Object.values(fields).forEach((field) => {
@@ -450,7 +462,8 @@
     });
 
     async function copySignature() {
-      const html = getSignatureHtml();
+      const html = signatureHtml();
+
       const plainText =
         `${fields.name.value}\n` +
         `${fields.title.value}\n` +
@@ -461,11 +474,8 @@
         `ROBOTS GO FIRST.`;
 
       try {
-        if (
-          navigator.clipboard &&
-          window.ClipboardItem
-        ) {
-          const clipboardItem = new ClipboardItem({
+        if (navigator.clipboard && window.ClipboardItem) {
+          const item = new ClipboardItem({
             "text/html": new Blob(
               [html],
               { type: "text/html" }
@@ -476,14 +486,14 @@
             )
           });
 
-          await navigator.clipboard.write([
-            clipboardItem
-          ]);
+          await navigator.clipboard.write([item]);
         } else {
           const temporary = document.createElement("div");
+
           temporary.innerHTML = html;
           temporary.style.position = "fixed";
           temporary.style.left = "-9999px";
+
           document.body.appendChild(temporary);
 
           const range = document.createRange();
@@ -494,14 +504,15 @@
           selection.addRange(range);
 
           document.execCommand("copy");
+
           selection.removeAllRanges();
           temporary.remove();
         }
 
-        statusMessage.textContent =
+        status.textContent =
           "Signature copied. Paste it into Gmail.";
       } catch (error) {
-        statusMessage.textContent =
+        status.textContent =
           "Copy failed. Please try again.";
       }
     }
